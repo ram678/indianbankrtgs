@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Indian Bank RTGS / NEFT Challan – Assam Iron Traders</title>
+<style>
+:root{--ink:#171717;--line:#222}
+*{box-sizing:border-box}
+body{margin:0;background:#eef1f5;color:#171717;font-family:Arial,Helvetica,sans-serif}
+header{background:#172b4d;color:#fff;padding:18px 20px}
+header h1{font-size:21px;margin:0 0 5px}
+header p{margin:0;font-size:13px;opacity:.9}
+.app{max-width:1100px;margin:22px auto;padding:0 14px}
+.toolbar{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:16px}
+button{border:0;border-radius:7px;padding:11px 16px;font-weight:700;cursor:pointer;background:#173b70;color:#fff}
+button.secondary{background:#e0e6ef;color:#172b4d}
+button.green{background:#167548}
+button.red{background:#a52a2a}
+.layout{display:grid;grid-template-columns:minmax(290px, .9fr) minmax(360px,1.1fr);gap:18px;align-items:start}
+.panel{background:#fff;border-radius:10px;padding:17px;box-shadow:0 2px 12px #172b4d12}
+.panel h2{font-size:17px;margin:0 0 14px}
+.fields{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+.field{display:flex;flex-direction:column;gap:5px}
+.field.full{grid-column:1/-1}
+label{font-size:12px;font-weight:700;color:#39465a}
+input,select,textarea{width:100%;padding:10px;border:1px solid #cbd2dc;border-radius:6px;font:14px Arial;background:#fff;min-width:0}
+textarea{min-height:58px;resize:vertical}
+.hint{font-size:11px;color:#687386;margin-top:10px;line-height:1.45}
+.preview-wrap{overflow:auto}
+.paper{width:100%;max-width:760px;margin:auto;background:#fff;border:5px solid #222;padding:13px 13px 16px;font-family:Arial,Helvetica,sans-serif;font-size:13px;line-height:1.22}
+.bankhead{text-align:center;margin:0 auto 5px;width:235px;border:1px solid #222;padding:5px;font-weight:bold;font-size:17px}
+.bankhead small{display:block;font-size:11px;margin-top:3px}
+.paper h2{text-align:center;font-size:23px;margin:3px 0 9px;border-bottom:2px solid #222;padding-bottom:3px}
+.meta{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:9px 0}
+.meta span{border-bottom:1px dotted #222;min-height:19px}
+.section-title{display:grid;grid-template-columns:1fr 1fr;text-align:center;font-size:26px;font-weight:800;letter-spacing:2px}
+table{border-collapse:collapse;width:100%;table-layout:fixed}
+td,th{border:1px solid #222;padding:4px 6px;vertical-align:middle}
+th{font-size:23px;letter-spacing:2px}
+td.label{width:14%;font-weight:normal;color:#171717;font-size:12px}
+td.value{width:36%;height:27px;overflow-wrap:anywhere}
+.statement{margin:3px 0 5px}
+.conditions{text-align:center;font-size:21px;font-weight:bold;text-decoration:underline;margin:4px 0 7px}
+.terms{font-size:12px;line-height:1.35}
+.terms p{margin:4px 0}
+.signrow{display:flex;justify-content:space-between;margin:27px 0 10px;padding-bottom:7px;border-bottom:1px dotted #222}
+.ack{text-align:center;font-size:20px;font-weight:bold;text-decoration:underline;margin:5px 0}
+.ackgrid{display:grid;grid-template-columns:1.2fr 1fr;min-height:130px;font-size:17px}
+.ackbottom{display:flex;justify-content:space-between;margin-top:15px;font-size:16px}
+.preview-value{white-space:pre-wrap;min-height:17px}
+.saved{margin-top:18px}
+.saved table{font-size:12px}
+.saved td,.saved th{padding:7px}
+.saved .actions{white-space:nowrap}
+.smallbtn{padding:6px 9px;font-size:11px;margin:2px}
+@media(max-width:800px){.layout{grid-template-columns:1fr}.fields{grid-template-columns:1fr 1fr}.paper{min-width:580px}.preview-wrap{overflow-x:auto}}
+@media(max-width:480px){.fields{grid-template-columns:1fr}.app{padding:0 9px}.panel{padding:13px}}
+@page{size:A4 portrait;margin:0}
+@media print{
+ html,body{width:210mm;height:297mm;margin:0!important;padding:0!important;background:#fff}
+ header,.toolbar,.entry-panel,.saved,.hint,.screen-only{display:none!important}
+ .app{width:210mm;max-width:none;height:297mm;margin:0!important;padding:0!important}
+ .layout{display:block;margin:0;padding:0}
+ .preview-wrap{overflow:visible;margin:0;padding:0}
+ .paper{width:210mm;height:297mm;max-width:none;min-width:0;margin:0;padding:7mm 7mm;border:3px solid #222;box-shadow:none;font-size:12px;overflow:hidden}
+ .paper h2{font-size:21px}
+ th{font-size:21px}
+ td.label{font-size:11px}
+ .terms{font-size:11px}
+ .ackgrid{min-height:120px}
+}
+</style>
+</head>
+<body>
+<header>
+  <h1>RTGS / NEFT Challan Filler</h1>
+  <p>Assam Iron Traders · Indian Bank · Fill, save and print</p>
+</header>
+<main class="app">
+  <div class="toolbar">
+    <button onclick="printChallan()">Print Challan</button>
+    <button class="green" onclick="saveEntry()">Save Entry</button>
+    <button class="secondary" onclick="newEntry()">New / Clear Beneficiary</button>
+    <button class="secondary" onclick="exportCSV()">Export Saved Entries to Excel</button>
+  </div>
+  <div class="layout">
+    <section class="panel entry-panel">
+      <h2>Challan details</h2>
+      <div class="fields">
+        <div class="field"><label for="branch">Indian Bank Branch</label><input id="branch" value="North Lakhimpur"></div>
+        <div class="field"><label for="date">Date</label><input id="date" type="date"></div>
+        <div class="field full"><label for="sender">Sender name & address</label><textarea id="sender">ASSAM IRON TRADERS, NT Road, North Lakhimpur</textarea></div>
+        <div class="field"><label for="mobile">Sender mobile no.</label><input id="mobile" value="9435088891"></div>
+        <div class="field"><label for="senderac">Sender A/c No.</label><input id="senderac" value="515639328"></div>
+        <div class="field"><label for="mode">Mode of remittance</label><select id="mode"><option>RTGS</option><option>NEFT</option></select></div>
+        <div class="field"><label for="amount">Amount (₹)</label><input id="amount" inputmode="decimal" placeholder="Enter amount"></div>
+        <div class="field"><label for="charges">Charges (₹)</label><input id="charges" inputmode="decimal" placeholder="Enter charges"></div>
+        <div class="field"><label for="total">Total amount (₹)</label><input id="total" inputmode="decimal" placeholder="Auto-calculated" readonly></div>
+        <div class="field full"><label for="purpose">Purpose of remittance</label><input id="purpose" value="Business"></div>
+        <div class="field full"><label for="benname">Beneficiary name</label><input id="benname" placeholder="Enter beneficiary name"></div>
+        <div class="field"><label for="bank">Beneficiary bank's name</label><input id="bank" placeholder="Bank name"></div>
+        <div class="field"><label for="benbranch">Beneficiary branch name</label><input id="benbranch" placeholder="Branch name"></div>
+        <div class="field"><label for="ifsc">IFSC code</label><input id="ifsc" placeholder="IFSC code"></div>
+        <div class="field"><label for="acctype">Type of account</label><select id="acctype"><option value=""></option><option>Current</option><option>Savings</option><option>Other</option></select></div>
+        <div class="field"><label for="benac">Beneficiary account no.</label><input id="benac" placeholder="Account number"></div>
+        <div class="field"><label for="confirmac">Confirm beneficiary A/c No.</label><input id="confirmac" placeholder="Re-enter account number"></div>
+        <div class="field"><label for="pan">PAN No.</label><input id="pan" placeholder="PAN (if applicable)"></div>
+        <div class="field full"><label for="amountwords">Amount in words (for customer acknowledgement)</label><input id="amountwords" placeholder="Rupees ... only"></div>
+        <div class="field"><label for="transferdate">Date of transfer</label><input id="transferdate" type="date"></div>
+        <div class="field"><label for="urt">URT No. / IDBI</label><input id="urt" placeholder="For bank use"></div>
+      </div>
+      <p class="hint">Your sender details are pre-filled. The date is set to today automatically. All fields except the calculated total can be edited. Saved entries stay in this browser on this device; export regularly to keep an Excel-compatible file.</p>
+    </section>
+    <section class="preview-wrap">
+      <div class="paper" id="paper">
+        <div class="bankhead">इंडियन बैंक　✥　Indian Bank<small>इलाहाबाद बैंक　　ALLAHABAD</small></div>
+        <h2>Challan For Remittance Through RTGS / NEFT</h2>
+        <div class="meta"><div>INDIAN BANK</div><div>Branch: <span id="p_branch"></span></div><div>Date: <span id="p_date"></span></div></div>
+        <table>
+          <colgroup><col style="width:14%"><col style="width:36%"><col style="width:14%"><col style="width:36%"></colgroup>
+          <tr><th colspan="2">SENDER</th><th colspan="2">BENEFICIARY</th></tr>
+          <tr><td class="label">Name &amp;<br>Address</td><td class="value"><div class="preview-value" id="p_sender"></div></td><td class="label">Name</td><td class="value"><div class="preview-value" id="p_benname"></div></td></tr>
+          <tr><td class="label">Mobile No.</td><td class="value" id="p_mobile"></td><td class="label">Bank’s<br>Name</td><td class="value" id="p_bank"></td></tr>
+          <tr><td class="label">A/c. No.</td><td class="value" id="p_senderac"></td><td class="label">Branch<br>Name</td><td class="value" id="p_benbranch"></td></tr>
+          <tr><td class="label">Mode of<br>Remittance</td><td class="value" id="p_mode"></td><td class="label">IFSC<br>Code</td><td class="value" id="p_ifsc"></td></tr>
+          <tr><td class="label">Amount</td><td class="value" id="p_amount"></td><td class="label">Type of<br>Account</td><td class="value" id="p_acctype"></td></tr>
+          <tr><td class="label">Charges</td><td class="value" id="p_charges"></td><td class="label">Account No.</td><td class="value" id="p_benac"></td></tr>
+          <tr><td class="label">Total<br>Amount</td><td class="value" id="p_total"></td><td class="label">Confirm<br>A/c. No.</td><td class="value" id="p_confirmac"></td></tr>
+          <tr><td class="label">Purpose of<br>Remittance</td><td class="value" id="p_purpose"></td><td class="label">PAN No.</td><td class="value" id="p_pan"></td></tr>
+        </table>
+        <div class="statement">Remit the amount as per above details by debiting my / our account for the amount of remittance<br>Plus applicable charges</div>
+        <div class="conditions">CONDITION OF TRANSFER</div>
+        <div class="terms">
+          <p>1.　Remitting bank shall not be liable for any loss of damage arising or resulting from delay in Transmission/delivery or non-delivery of electronic message or any mistake, omission, or error in Transmission of delivery thereof or in deciphering the message from any cause whatsoever or from its misinterpretation received or the action of the destination bank or any act or even beyond control.</p>
+          <p>2.　All payments instruction should be checked carefully by the remitter.</p>
+          <p>　　Messages received after cut-off time will be sent on the next working day.</p>
+        </div>
+        <div class="signrow"><span>Date: <span id="p_conditiondate"></span></span><span>Authorised Signatory</span></div>
+        <div class="ack">CUSTOMER ACKNOWLEDGMENT</div>
+        <div class="ackgrid"><div>Amount: <span id="p_ackamount"></span><br>(Rupees <span id="p_words"></span> only)<br>Debited Applicant’s A/c. No.: <span id="p_ackac"></span></div><div style="padding-top:20px">Date of Transfer: <span id="p_transferdate"></span><br><br>Beneficiary Name: <span id="p_ackbeneficiary"></span></div></div>
+        <div class="ackbottom"><span>URT No. IDIB: <span id="p_urt"></span><br><strong>ASSAM IRON TRADERS</strong></span><span></span></div>
+      </div>
+    </section>
+  </div>
+  <section class="panel saved">
+    <h2>Saved entries on this device</h2>
+    <div id="savedList">No entries saved yet.</div>
+  </section>
+</main>
+<script>
+const ids=['branch','date','sender','mobile','senderac','mode','amount','charges','total','purpose','benname','bank','benbranch','ifsc','acctype','benac','confirmac','pan','amountwords','transferdate','urt'];
+const $=id=>document.getElementById(id);
+function today(){const d=new Date();return new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,10)}
+function val(id){return $(id).value.trim()}
+function money(v){if(v===''||!Number.isFinite(Number(v)))return '';return '₹ '+Number(v).toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2})}
+function updateTotal(){let a=Number($('amount').value)||0,c=Number($('charges').value)||0;$('total').value=(a||c)?(a+c).toFixed(2):''}
+function render(){
+ updateTotal();
+ const map={branch:'branch',date:'date',sender:'sender',mobile:'mobile',senderac:'senderac',mode:'mode',amount:'amount',charges:'charges',total:'total',purpose:'purpose',benname:'benname',bank:'bank',benbranch:'benbranch',ifsc:'ifsc',acctype:'acctype',benac:'benac',confirmac:'confirmac',pan:'pan',amountwords:'words',transferdate:'transferdate',urt:'urt'};
+ for(const [src,dst] of Object.entries(map)){let el=$('p_'+dst);if(!el)continue;let v=val(src);if(['amount','charges','total'].includes(src))v=money(v);if(src==='date'||src==='transferdate')v=v?new Date(v+'T00:00:00').toLocaleDateString('en-IN') : '';el.textContent=v;}
+ $('p_ackamount').textContent=money(val('amount'));
+ $('p_ackac').textContent=val('senderac');
+ $('p_ackbeneficiary').textContent=val('benname');
+ $('p_conditiondate').textContent=val('date')?new Date(val('date')+'T00:00:00').toLocaleDateString('en-IN'):'';
+}
+ids.forEach(id=>$(id).addEventListener('input',render));
+$('amount').addEventListener('input',render);$('charges').addEventListener('input',render);
+$('date').value=today();$('transferdate').value=today();render();
+function data(){let o={};ids.forEach(k=>o[k]=$(k).value);return o}
+function fill(o){ids.forEach(k=>{if(o[k]!==undefined)$(k).value=o[k]});render();window.scrollTo({top:0,behavior:'smooth'})}
+function getEntries(){try{return JSON.parse(localStorage.getItem('ait_challans')||'[]')}catch(e){return []}}
+function saveEntry(){if(!val('benname')&&!val('amount')){alert('Please enter at least beneficiary name and amount before saving.');return}let a=getEntries();a.unshift({...data(),savedAt:new Date().toISOString()});localStorage.setItem('ait_challans',JSON.stringify(a));showSaved();alert('Entry saved on this device.')}
+function newEntry(){['benname','bank','benbranch','ifsc','acctype','benac','confirmac','pan','amount','charges','amountwords','urt'].forEach(k=>$(k).value='');$('date').value=today();$('transferdate').value=today();render();window.scrollTo({top:0,behavior:'smooth'})}
+function printChallan(){render();window.print()}
+function deleteEntry(i){let a=getEntries();a.splice(i,1);localStorage.setItem('ait_challans',JSON.stringify(a));showSaved()}
+function loadEntry(i){fill(getEntries()[i])}
+function showSaved(){let a=getEntries();if(!a.length){$('savedList').textContent='No entries saved yet.';return}let t=document.createElement('table');t.innerHTML='<tr><th>Date</th><th>Beneficiary</th><th>Amount</th><th>Actions</th></tr>';a.forEach((x,i)=>{let tr=document.createElement('tr');let d=x.date||'';let cells=[d,x.benname||'',x.amount||''];cells.forEach(v=>{let td=document.createElement('td');td.textContent=v;tr.appendChild(td)});let td=document.createElement('td');td.className='actions';let b=document.createElement('button');b.className='smallbtn';b.textContent='Load';b.onclick=()=>loadEntry(i);let del=document.createElement('button');del.className='smallbtn red';del.textContent='Delete';del.onclick=()=>deleteEntry(i);td.append(b,del);tr.appendChild(td);t.appendChild(tr)});$('savedList').replaceChildren(t)}
+function exportCSV(){let a=getEntries();if(!a.length){alert('No saved entries to export.');return}let cols=ids;let esc=v=>'"'+String(v??'').replace(/"/g,'""')+'"';let csv=[cols.join(','),...a.map(o=>cols.map(k=>esc(o[k])).join(','))].join('\r\n');let blob=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8;'});let u=URL.createObjectURL(blob);let link=document.createElement('a');link.href=u;link.download='Assam_Iron_Traders_Challans.csv';link.click();URL.revokeObjectURL(u)}
+showSaved();
+</script>
+</body></html>
